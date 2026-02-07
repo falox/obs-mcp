@@ -9,7 +9,7 @@ require (
 	github.com/go-openapi/runtime v0.29.2
 	github.com/go-openapi/strfmt v0.25.0
 	github.com/google/jsonschema-go v0.4.2
-	github.com/mark3labs/mcp-go v0.43.2
+	github.com/mark3labs/mcp-go v0.44.0-beta.3
 	github.com/prometheus/alertmanager v0.30.1
 	github.com/prometheus/client_golang v1.23.2
 	github.com/prometheus/common v0.67.4

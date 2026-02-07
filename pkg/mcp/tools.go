@@ -39,6 +39,13 @@ func CreateExecuteInstantQueryTool() mcp.Tool {
 func CreateExecuteRangeQueryTool() mcp.Tool {
 	tool := tools.ExecuteRangeQuery.ToMCPTool()
 	mcp.WithOutputSchema[tools.RangeQueryOutput]()(&tool)
+	tool.Meta = &mcp.Meta{
+		AdditionalFields: map[string]any{
+			"ui": map[string]any{
+				"resourceUri": "ui://timeseries-chart",
+			},
+		},
+	}
 	return tool
 }
 
