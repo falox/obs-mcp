@@ -85,6 +85,12 @@ var (
 				Required:    false,
 				Pattern:     `^\d+[smhdwy]$`,
 			},
+			{
+				Name:        "title",
+				Type:        ParamTypeString,
+				Description: "Human-readable chart title describing what the query shows (e.g., 'API Error Rate Over Last Hour'). Displayed above the chart when provided.",
+				Required:    false,
+			},
 		},
 	}
 
