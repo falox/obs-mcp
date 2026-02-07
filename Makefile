@@ -120,6 +120,10 @@ run-no-guardrails: build ## Run obs-mcp in HTTP mode with guardrails disabled
 	@echo "Note: AUTH_MODE=serviceaccount or header requires PROMETHEUS_URL and ALERTMANAGER_URL to be set"
 	./obs-mcp --listen $(LISTEN_ADDR) --auth-mode $(AUTH_MODE) --insecure --log-level $(LOG_LEVEL) --guardrails none
 
+.PHONY: test-chart
+test-chart: ## Run chart UI test harness (open http://localhost:9199)
+	go run ./cmd/test-chart
+
 # E2E Testing
 KIND_CLUSTER_NAME ?= obs-mcp-e2e
 
