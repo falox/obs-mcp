@@ -2,6 +2,7 @@ package prometheus
 
 import (
 	"context"
+	"strings"
 	"testing"
 	"time"
 
@@ -637,7 +638,7 @@ func TestGuardrails_TSDBUnsupported(t *testing.T) {
 		Msg:  "client error: 404",
 	}
 
-	t.Run("MaxMetricCardinality skips check when TSDB returns 404", func(t *testing.T) {
+	t.Run("MaxMetricCardinality returns descriptive error when TSDB returns 404", func(t *testing.T) {
 		mock := &mockPrometheusAPI{
 			tsdbErr: tsdb404Err,
 		}
@@ -649,12 +650,18 @@ func TestGuardrails_TSDBUnsupported(t *testing.T) {
 		}
 
 		safe, err := g.IsSafeQuery(context.TODO(), `http_requests_total{job="api"}`, mock)
-		if !safe {
-			t.Errorf("expected query to be safe when TSDB endpoint is unavailable, got error: %v", err)
+		if safe {
+			t.Error("expected query to be unsafe when TSDB endpoint is unavailable")
+		}
+		if err == nil {
+			t.Error("expected error explaining TSDB unavailability")
+		}
+		if !strings.Contains(err.Error(), "max-metric-cardinality") {
+			t.Errorf("expected error to mention max-metric-cardinality guardrail, got: %v", err)
 		}
 	})
 
-	t.Run("MaxLabelCardinality skips check when TSDB returns 404", func(t *testing.T) {
+	t.Run("MaxLabelCardinality returns descriptive error when TSDB returns 404", func(t *testing.T) {
 		mock := &mockPrometheusAPI{
 			tsdbErr: tsdb404Err,
 		}
@@ -666,8 +673,14 @@ func TestGuardrails_TSDBUnsupported(t *testing.T) {
 		}
 
 		safe, err := g.IsSafeQuery(context.TODO(), `http_requests_total{pod=~".*"}`, mock)
-		if !safe {
-			t.Errorf("expected query to be safe when TSDB endpoint is unavailable, got error: %v", err)
+		if safe {
+			t.Error("expected query to be unsafe when TSDB endpoint is unavailable")
+		}
+		if err == nil {
+			t.Error("expected error explaining TSDB unavailability")
+		}
+		if !strings.Contains(err.Error(), "max-label-cardinality") {
+			t.Errorf("expected error to mention max-label-cardinality guardrail, got: %v", err)
 		}
 	})
 
