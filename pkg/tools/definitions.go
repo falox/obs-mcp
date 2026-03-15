@@ -85,6 +85,50 @@ var (
 				Required:    false,
 				Pattern:     `^\d+[smhdwy]$`,
 			},
+		},
+	}
+
+	ShowTimeseries = ToolDef{
+		Name:        "show_timeseries",
+		Description: ShowTimeseriesPrompt,
+		Title:       "Show Timeseries Chart",
+		ReadOnly:    true,
+		Destructive: false,
+		Idempotent:  true,
+		OpenWorld:   true,
+		Params: []ParamDef{
+			{
+				Name:        "query",
+				Type:        ParamTypeString,
+				Description: "PromQL query string using metric names verified via list_metrics",
+				Required:    true,
+			},
+			{
+				Name:        "step",
+				Type:        ParamTypeString,
+				Description: "Query resolution step width (e.g., '15s', '1m', '1h'). Choose based on time range: shorter ranges use smaller steps.",
+				Required:    true,
+				Pattern:     `^\d+[smhdwy]$`,
+			},
+			{
+				Name:        "start",
+				Type:        ParamTypeString,
+				Description: "Start time as RFC3339 or Unix timestamp (optional)",
+				Required:    false,
+			},
+			{
+				Name:        "end",
+				Type:        ParamTypeString,
+				Description: "End time as RFC3339 or Unix timestamp (optional). Use `NOW` for current time.",
+				Required:    false,
+			},
+			{
+				Name:        "duration",
+				Type:        ParamTypeString,
+				Description: "Duration to look back from now (e.g., '1h', '30m', '1d', '2w') (optional)",
+				Required:    false,
+				Pattern:     `^\d+[smhdwy]$`,
+			},
 			{
 				Name:        "title",
 				Type:        ParamTypeString,
@@ -263,6 +307,7 @@ func AllTools() []ToolDef {
 		ListMetrics,
 		ExecuteInstantQuery,
 		ExecuteRangeQuery,
+		ShowTimeseries,
 		GetLabelNames,
 		GetLabelValues,
 		GetSeries,

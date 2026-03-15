@@ -59,6 +59,13 @@ func ExecuteRangeQueryHandler(opts ObsMCPOptions) func(context.Context, mcp.Call
 	})
 }
 
+// ShowTimeseriesHandler handles the visualization of Prometheus range queries as interactive charts.
+func ShowTimeseriesHandler(opts ObsMCPOptions) func(context.Context, mcp.CallToolRequest) (*mcp.CallToolResult, error) {
+	return createPrometheusToolHandler(opts, tools.BuildRangeQueryInput, func(ctx context.Context, promClient prometheus.Loader, input tools.RangeQueryInput) *resultutil.Result {
+		return tools.ExecuteRangeQueryHandler(ctx, promClient, input, true)
+	})
+}
+
 // ExecuteInstantQueryHandler handles the execution of Prometheus instant queries.
 func ExecuteInstantQueryHandler(opts ObsMCPOptions) func(context.Context, mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	return createPrometheusToolHandler(opts, tools.BuildInstantQueryInput, tools.ExecuteInstantQueryHandler)

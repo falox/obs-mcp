@@ -3,12 +3,14 @@ package mcp
 import (
 	"context"
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/go-openapi/strfmt"
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/prometheus/alertmanager/api/v2/models"
+	"github.com/prometheus/common/model"
 
 	"github.com/rhobs/obs-mcp/pkg/alertmanager"
 	"github.com/rhobs/obs-mcp/pkg/prometheus"
@@ -651,6 +653,82 @@ func TestExecuteInstantQueryHandler_RelativeTime(t *testing.T) {
 				t.Fatalf("unexpected error result: %v", getErrorMessage(t, result))
 			}
 		})
+	}
+}
+
+func TestShowTimeseriesHandler_ReturnsFullData(t *testing.T) {
+	mockClient := &MockedLoader{
+		ExecuteRangeQueryFunc: func(ctx context.Context, query string, start, end time.Time, step time.Duration) (map[string]any, error) {
+			if query != "up{job=\"api\"}" {
+				t.Errorf("expected query 'up{job=\"api\"}', got %q", query)
+			}
+			return map[string]any{"resultType": "matrix", "result": []any{}}, nil
+		},
+	}
+
+	ctx := withMockClient(context.Background(), mockClient)
+	handler := ShowTimeseriesHandler(ObsMCPOptions{})
+	req := newMockRequest(map[string]any{
+		"query": "up{job=\"api\"}",
+		"step":  "1m",
+		"title": "Test Chart",
+	})
+
+	result, err := handler(ctx, req)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if result.IsError {
+		t.Fatalf("unexpected error result: %v", getErrorMessage(t, result))
+	}
+}
+
+func TestShowTimeseriesHandler_AlwaysReturnsFullResponse(t *testing.T) {
+	// Verify that ShowTimeseriesHandler always returns full data (Result, not Summary),
+	// regardless of the FullRangeQueryResponse option.
+	mockClient := &MockedLoader{
+		ExecuteRangeQueryFunc: func(ctx context.Context, query string, start, end time.Time, step time.Duration) (map[string]any, error) {
+			return map[string]any{
+				"resultType": "matrix",
+				"result": model.Matrix{
+					&model.SampleStream{
+						Metric: model.Metric{"__name__": "up"},
+						Values: []model.SamplePair{
+							{Timestamp: 1700000000000, Value: 1},
+						},
+					},
+				},
+			}, nil
+		},
+	}
+
+	ctx := withMockClient(context.Background(), mockClient)
+	// FullRangeQueryResponse is false, but show_timeseries should still return full data
+	handler := ShowTimeseriesHandler(ObsMCPOptions{FullRangeQueryResponse: false})
+	req := newMockRequest(map[string]any{
+		"query": "up{job=\"api\"}",
+		"step":  "1m",
+	})
+
+	result, err := handler(ctx, req)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if result.IsError {
+		t.Fatalf("unexpected error result: %v", getErrorMessage(t, result))
+	}
+
+	// Verify the result contains full data, not summary
+	textContent, ok := result.Content[0].(mcp.TextContent)
+	if !ok {
+		t.Fatal("expected text content")
+	}
+	// Full response should contain "values" field, not "summary"
+	if !strings.Contains(textContent.Text, "values") {
+		t.Error("expected full response with 'values' field")
+	}
+	if strings.Contains(textContent.Text, "summary") {
+		t.Error("expected full response, not summary")
 	}
 }
 

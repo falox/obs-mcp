@@ -70,6 +70,42 @@ This MCP server exposes the following tools for interacting with Prometheus/Than
 
 **Parameters:**
 
+| Parameter  | Type     | Required | Description                                                                                                          |
+| :--------- | :------- | :------: | :------------------------------------------------------------------------------------------------------------------- |
+| `query`    | `string` | ✅        | PromQL query string using metric names verified via list_metrics                                                     |
+| `step`     | `string` | ✅        | Query resolution step width (e.g., '15s', '1m', '1h'). Choose based on time range: shorter ranges use smaller steps. |
+| `duration` | `string` |          | Duration to look back from now (e.g., '1h', '30m', '1d', '2w') (optional)                                            |
+| `end`      | `string` |          | End time as RFC3339 or Unix timestamp (optional). Use `NOW` for current time.                                        |
+| `start`    | `string` |          | Start time as RFC3339 or Unix timestamp (optional)                                                                   |
+
+> [!NOTE]
+> Parameters with patterns must match: `^\d+[smhdwy]$`
+
+**Output Schema:**
+
+| Field        | Type       | Description                                                              |
+| :----------- | :--------- | :----------------------------------------------------------------------- |
+| `result`     | `object[]` | The query results as an array of time series                             |
+| `resultType` | `string`   | The type of result returned: matrix or vector or scalar                  |
+| `summary`    | `object[]` | Summary statistics for each time series (when summarize flag is enabled) |
+| `warnings`   | `string[]` | Any warnings generated during query execution                            |
+
+---
+
+## `show_timeseries`
+
+> Execute a PromQL range query and display the results as an interactive timeseries chart.
+
+**Usage Tips:**
+
+- PREREQUISITE: You MUST call list_metrics first to verify the metric exists
+- This tool works like execute_range_query but renders the results as a visual chart in MCP Apps-capable clients. Use it when the user wants to see a graph or visualization of time-series data.
+- WHEN TO USE: - When the user asks to "show", "graph", "plot", or "visualize" metrics - When a visual chart would be more useful than raw data
+- TIME PARAMETERS: - 'duration': Look back from now (e.g., "5m", "1h", "24h") - 'step': Data point resolution (e.g., "1m" for 1-hour duration, "5m" for 24-hour duration) - 'title': A descriptive chart title (e.g., "API Error Rate Over Last Hour")
+- The 'query' parameter MUST use metric names that were returned by list_metrics.
+
+**Parameters:**
+
 | Parameter  | Type     | Required | Description                                                                                                                                  |
 | :--------- | :------- | :------: | :------------------------------------------------------------------------------------------------------------------------------------------- |
 | `query`    | `string` | ✅        | PromQL query string using metric names verified via list_metrics                                                                             |

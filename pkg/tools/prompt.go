@@ -39,7 +39,8 @@ If the user mentions a specific alert by name, use get_alerts with a filter to r
 ## Query Type Selection
 
 - **execute_instant_query**: Current values, point-in-time snapshots, "right now" questions
-- **execute_range_query**: Trends over time, rate calculations, historical analysis`
+- **execute_range_query**: Trends over time, rate calculations, historical analysis
+- **show_timeseries**: Same as execute_range_query but renders an interactive chart. Use when the user asks to visualize, graph, or plot metrics.`
 
 	ListMetricsPrompt = `MANDATORY FIRST STEP: List all available metric names in Prometheus.
 
@@ -82,6 +83,23 @@ WHEN TO USE:
 TIME PARAMETERS:
 - 'duration': Look back from now (e.g., "5m", "1h", "24h")
 - 'step': Data point resolution (e.g., "1m" for 1-hour duration, "5m" for 24-hour duration)
+
+The 'query' parameter MUST use metric names that were returned by list_metrics.`
+
+	ShowTimeseriesPrompt = `Execute a PromQL range query and display the results as an interactive timeseries chart.
+
+PREREQUISITE: You MUST call list_metrics first to verify the metric exists
+
+This tool works like execute_range_query but renders the results as a visual chart in MCP Apps-capable clients. Use it when the user wants to see a graph or visualization of time-series data.
+
+WHEN TO USE:
+- When the user asks to "show", "graph", "plot", or "visualize" metrics
+- When a visual chart would be more useful than raw data
+
+TIME PARAMETERS:
+- 'duration': Look back from now (e.g., "5m", "1h", "24h")
+- 'step': Data point resolution (e.g., "1m" for 1-hour duration, "5m" for 24-hour duration)
+- 'title': A descriptive chart title (e.g., "API Error Rate Over Last Hour")
 
 The 'query' parameter MUST use metric names that were returned by list_metrics.`
 

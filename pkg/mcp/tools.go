@@ -13,6 +13,7 @@ func AllTools() []mcp.Tool {
 		CreateListMetricsTool(),
 		CreateExecuteInstantQueryTool(),
 		CreateExecuteRangeQueryTool(),
+		CreateShowTimeseriesTool(),
 		CreateGetLabelNamesTool(),
 		CreateGetLabelValuesTool(),
 		CreateGetSeriesTool(),
@@ -38,6 +39,12 @@ func CreateExecuteInstantQueryTool() mcp.Tool {
 
 func CreateExecuteRangeQueryTool() mcp.Tool {
 	tool := tools.ExecuteRangeQuery.ToMCPTool()
+	mcp.WithOutputSchema[tools.RangeQueryOutput]()(&tool)
+	return tool
+}
+
+func CreateShowTimeseriesTool() mcp.Tool {
+	tool := tools.ShowTimeseries.ToMCPTool()
 	mcp.WithOutputSchema[tools.RangeQueryOutput]()(&tool)
 	tool.Meta = &mcp.Meta{
 		AdditionalFields: map[string]any{

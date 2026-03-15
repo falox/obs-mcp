@@ -184,6 +184,11 @@ func TestToolParameters(t *testing.T) {
 			expectedRequired: []string{"query", "step"},
 			expectedOptional: []string{"start", "end", "duration"},
 		},
+		{
+			tool:             CreateShowTimeseriesTool(),
+			expectedRequired: []string{"query", "step"},
+			expectedOptional: []string{"start", "end", "duration", "title"},
+		},
 	}
 
 	for _, tt := range tests {
@@ -263,6 +268,27 @@ func TestToolPatternValidation(t *testing.T) {
 				},
 			},
 		},
+		{
+			tool: CreateShowTimeseriesTool(),
+			params: []paramPatternTest{
+				{
+					param:         "step",
+					hasPattern:    true,
+					validInputs:   []string{"1s", "30s", "1m", "5m", "1h", "24h", "1d", "7d", "1w", "2w"},
+					invalidInputs: []string{"", "1", "s", "1x", "1.5m", "1m30s", "invalid"},
+				},
+				{
+					param:         "duration",
+					hasPattern:    true,
+					validInputs:   []string{"1s", "30s", "1m", "5m", "1h", "24h", "1d", "7d", "1w", "2w"},
+					invalidInputs: []string{"", "1", "s", "1x", "1.5m", "1m30s", "invalid"},
+				},
+				{
+					param:      "title",
+					hasPattern: false,
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -316,6 +342,7 @@ func TestToolsHaveOutputSchema(t *testing.T) {
 	toolsToTest := []mcp.Tool{
 		CreateListMetricsTool(),
 		CreateExecuteRangeQueryTool(),
+		CreateShowTimeseriesTool(),
 	}
 
 	if len(toolsToTest) == 0 {
