@@ -187,7 +187,7 @@ func TestToolParameters(t *testing.T) {
 		{
 			tool:             CreateShowTimeseriesTool(),
 			expectedRequired: []string{"query", "step"},
-			expectedOptional: []string{"start", "end", "duration", "title"},
+			expectedOptional: []string{"start", "end", "duration", "title", "description"},
 		},
 	}
 
@@ -285,6 +285,10 @@ func TestToolPatternValidation(t *testing.T) {
 				},
 				{
 					param:      "title",
+					hasPattern: false,
+				},
+				{
+					param:      "description",
 					hasPattern: false,
 				},
 			},

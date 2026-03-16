@@ -9,6 +9,7 @@
   var lastResult = null;
   var queryString = null;
   var titleString = null;
+  var descriptionString = null;
   var requestId = 1;
 
   // ===== Color Palettes (PatternFly v6 multi-color ordered chart colors) =====
@@ -354,6 +355,16 @@
         titleEl.textContent = "";
         titleEl.classList.remove("visible");
       }
+      var descEl = document.getElementById("chart-description");
+      if (args.description) {
+        descriptionString = args.description;
+        descEl.textContent = descriptionString;
+        descEl.classList.add("visible");
+      } else {
+        descriptionString = null;
+        descEl.textContent = "";
+        descEl.classList.remove("visible");
+      }
       if (args.query) {
         queryString = args.query;
         document.getElementById("query-value").textContent = queryString;
@@ -398,6 +409,7 @@
       lastResult = null;
       queryString = null;
       titleString = null;
+      descriptionString = null;
       return;
     }
   });

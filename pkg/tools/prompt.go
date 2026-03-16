@@ -90,7 +90,7 @@ The 'query' parameter MUST use metric names that were returned by list_metrics.`
 
 PREREQUISITE: You MUST call list_metrics first to verify the metric exists
 
-This tool works like execute_range_query but renders the results as a visual chart in MCP Apps-capable clients. Use it when the user wants to see a graph or visualization of time-series data.
+This tool works like execute_range_query but renders the results as a visual chart in MCP Apps-capable clients. Use it when the user wants to see a graph or visualization of time-series data. It accepts a single PromQL query. Call it multiple times for multiple charts.
 
 WHEN TO USE:
 - When the user asks to "show", "graph", "plot", or "visualize" metrics
@@ -100,6 +100,7 @@ TIME PARAMETERS:
 - 'duration': Look back from now (e.g., "5m", "1h", "24h")
 - 'step': Data point resolution (e.g., "1m" for 1-hour duration, "5m" for 24-hour duration)
 - 'title': A descriptive chart title (e.g., "API Error Rate Over Last Hour")
+- 'description': An explanation of the chart's meaning or context (e.g., "Shows the rate of HTTP 5xx errors per second, broken down by pod")
 
 The 'query' parameter MUST use metric names that were returned by list_metrics.`
 

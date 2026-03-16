@@ -135,6 +135,12 @@ var (
 				Description: "Human-readable chart title describing what the query shows (e.g., 'API Error Rate Over Last Hour'). Displayed above the chart when provided.",
 				Required:    false,
 			},
+			{
+				Name:        "description",
+				Type:        ParamTypeString,
+				Description: "Explanation of the chart's meaning or context (e.g., 'Shows the rate of HTTP 5xx errors per second, broken down by pod'). Displayed below the title when provided.",
+				Required:    false,
+			},
 		},
 	}
 

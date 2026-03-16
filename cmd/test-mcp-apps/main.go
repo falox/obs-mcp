@@ -184,6 +184,9 @@ const harness = `<!DOCTYPE html>
   <label>Title</label>
   <input type="text" id="title-input" value="CPU Usage by Pod (Last 2 Hours)" placeholder="Chart title (optional)">
 
+  <label>Description</label>
+  <input type="text" id="description-input" value="Shows CPU usage rate per pod in the openshift-monitoring namespace" placeholder="Chart description (optional)">
+
   <button class="action" onclick="sendData()">Send Data</button>
   <button class="action" onclick="clearData()" style="background:#dc2626">Clear</button>
 </div>
@@ -220,6 +223,9 @@ var f = document.getElementById("f");
   if (p.has("title")) {
     document.getElementById("title-input").value = p.get("title");
   }
+  if (p.has("description")) {
+    document.getElementById("description-input").value = p.get("description");
+  }
 })();
 
 function updateURL() {
@@ -229,6 +235,8 @@ function updateURL() {
   p.set("range", document.getElementById("time-range").value);
   var title = document.getElementById("title-input").value.trim();
   if (title) p.set("title", title);
+  var description = document.getElementById("description-input").value.trim();
+  if (description) p.set("description", description);
   history.replaceState(null, "", "?" + p.toString());
 }
 
@@ -319,9 +327,11 @@ function sendData() {
 
   updateURL();
 
-  // Send tool-input (query + optional title)
+  // Send tool-input (query + optional title/description)
+  var description = document.getElementById("description-input").value.trim();
   var toolArgs = { query: query };
   if (title) toolArgs.title = title;
+  if (description) toolArgs.description = description;
   f.contentWindow.postMessage({
     jsonrpc: "2.0",
     method: "ui/notifications/tool-input",

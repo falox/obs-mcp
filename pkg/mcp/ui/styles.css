@@ -71,6 +71,19 @@ body {
   display: block;
 }
 
+/* ===== Chart Description ===== */
+.chart-description {
+  padding: 2px 16px 0;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  display: none;
+  transition: color 0.2s;
+}
+
+.chart-description.visible {
+  display: block;
+}
+
 /* ===== Chart Area ===== */
 #chart-wrapper {
   flex: 1;
@@ -79,7 +92,8 @@ body {
   position: relative;
 }
 
-.chart-title.visible ~ #chart-wrapper {
+.chart-title.visible ~ #chart-wrapper,
+.chart-description.visible ~ #chart-wrapper {
   padding-top: 12px;
 }
 
