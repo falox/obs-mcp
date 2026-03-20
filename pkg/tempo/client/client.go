@@ -24,9 +24,8 @@ func NewTempoClient(httpClient *http.Client, url string) *TempoClient {
 	}
 }
 
-func (c *TempoClient) doRequest(req *http.Request) (string, error) {
-	// Use LLM-friendly format
-	req.Header.Set("Accept", "application/vnd.grafana.llm")
+func (c *TempoClient) doRequestWithAccept(req *http.Request, accept string) (string, error) {
+	req.Header.Set("Accept", accept)
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
@@ -48,6 +47,10 @@ func (c *TempoClient) doRequest(req *http.Request) (string, error) {
 	}
 
 	return string(bodyBytes), nil
+}
+
+func (c *TempoClient) doRequest(req *http.Request) (string, error) {
+	return c.doRequestWithAccept(req, "application/vnd.grafana.llm")
 }
 
 type QueryV2Options struct {
@@ -72,6 +75,25 @@ func (c *TempoClient) QueryV2(ctx context.Context, traceID string, opts QueryV2O
 	req.URL.RawQuery = q.Encode()
 
 	return c.doRequest(req)
+}
+
+func (c *TempoClient) QueryV2JSON(ctx context.Context, traceID string, opts QueryV2Options) (string, error) {
+	url := fmt.Sprintf("%s/api/v2/traces/%s", c.baseURL, urlpkg.PathEscape(traceID))
+	req, err := http.NewRequestWithContext(ctx, "GET", url, http.NoBody)
+	if err != nil {
+		return "", err
+	}
+
+	q := req.URL.Query()
+	if opts.Start != 0 {
+		q.Add("start", strconv.FormatInt(opts.Start, 10))
+	}
+	if opts.End != 0 {
+		q.Add("end", strconv.FormatInt(opts.End, 10))
+	}
+	req.URL.RawQuery = q.Encode()
+
+	return c.doRequestWithAccept(req, "application/json")
 }
 
 type SearchOptions struct {

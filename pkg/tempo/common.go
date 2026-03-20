@@ -75,7 +75,8 @@ func (t *Toolset) getTempoClient(params ToolParams) (tempoclient.Loader, error) 
 		}
 	}
 
-	url := instance.GetURL(tenant)
+	// TODO: hardcoded for local development, revert before merging
+	url := "https://tempo-tempo-gateway-tracing.apps.afalossi.2026.03.16.ccxdev.devshift.net/api/traces/v1/" + tenant + "/tempo"
 	httpClient, err := getHTTPClient(params.restConfig)
 	if err != nil {
 		return nil, err

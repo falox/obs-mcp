@@ -20,7 +20,17 @@ var dateAdapter string
 //go:embed ui/app.js
 var chartApp string
 
+//go:embed ui/trace.html
+var traceTemplate string
+
+//go:embed ui/trace.css
+var traceStyles string
+
+//go:embed ui/trace.js
+var traceApp string
+
 var chartHTML = buildChartHTML()
+var traceHTML = buildTraceHTML()
 
 func buildChartHTML() string {
 	r := strings.NewReplacer(
@@ -30,4 +40,12 @@ func buildChartHTML() string {
 		"{{APP}}", chartApp,
 	)
 	return r.Replace(chartTemplate)
+}
+
+func buildTraceHTML() string {
+	r := strings.NewReplacer(
+		"{{TRACE_STYLES}}", traceStyles,
+		"{{TRACE_APP}}", traceApp,
+	)
+	return r.Replace(traceTemplate)
 }

@@ -9,6 +9,7 @@ import (
 // Loader defines the interface for querying Tempo
 type Loader interface {
 	QueryV2(ctx context.Context, traceID string, opts QueryV2Options) (string, error)
+	QueryV2JSON(ctx context.Context, traceID string, opts QueryV2Options) (string, error)
 	Search(ctx context.Context, opts SearchOptions) (string, error)
 	SearchTagsV2(ctx context.Context, opts SearchTagsV2Options) (string, error)
 	SearchTagValuesV2(ctx context.Context, tag string, opts SearchTagValuesV2Options) (string, error)
@@ -33,6 +34,10 @@ func NewTempoLoader(httpClient *http.Client, url string) Loader {
 
 func (r *RealLoader) QueryV2(ctx context.Context, traceID string, opts QueryV2Options) (string, error) {
 	return r.client.QueryV2(ctx, traceID, opts)
+}
+
+func (r *RealLoader) QueryV2JSON(ctx context.Context, traceID string, opts QueryV2Options) (string, error) {
+	return r.client.QueryV2JSON(ctx, traceID, opts)
 }
 
 func (r *RealLoader) Search(ctx context.Context, opts SearchOptions) (string, error) {

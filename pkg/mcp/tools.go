@@ -22,6 +22,7 @@ func AllTools() []mcp.Tool {
 		CreateGetSilencesTool(),
 		tempo.ListInstancesTool.ToMCPTool(),
 		tempo.GetTraceByIDTool.ToMCPTool(),
+		CreateShowTraceTool(),
 		tempo.SearchTracesTool.ToMCPTool(),
 		tempo.SearchTagsTool.ToMCPTool(),
 		tempo.SearchTagValuesTool.ToMCPTool(),
@@ -56,6 +57,18 @@ func CreateShowTimeseriesTool() mcp.Tool {
 		AdditionalFields: map[string]any{
 			"ui": map[string]any{
 				"resourceUri": "ui://timeseries-chart",
+			},
+		},
+	}
+	return tool
+}
+
+func CreateShowTraceTool() mcp.Tool {
+	tool := tempo.ShowTraceTool.ToMCPTool()
+	tool.Meta = &mcp.Meta{
+		AdditionalFields: map[string]any{
+			"ui": map[string]any{
+				"resourceUri": "ui://trace-waterfall",
 			},
 		},
 	}

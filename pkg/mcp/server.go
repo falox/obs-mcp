@@ -82,6 +82,25 @@ func NewMCPServer(opts ObsMCPOptions) (*server.MCPServer, error) {
 		},
 	)
 
+	// Register trace waterfall UI resource for MCP Apps
+	mcpServer.AddResource(
+		mcp.Resource{
+			URI:         "ui://trace-waterfall",
+			Name:        "Trace Waterfall",
+			Description: "Interactive waterfall chart for distributed trace spans",
+			MIMEType:    "text/html;profile=mcp-app",
+		},
+		func(ctx context.Context, req mcp.ReadResourceRequest) ([]mcp.ResourceContents, error) {
+			return []mcp.ResourceContents{
+				mcp.TextResourceContents{
+					URI:      "ui://trace-waterfall",
+					MIMEType: "text/html;profile=mcp-app",
+					Text:     traceHTML,
+				},
+			}, nil
+		},
+	)
+
 	return mcpServer, nil
 }
 
@@ -133,6 +152,7 @@ func SetupTools(mcpServer *server.MCPServer, opts ObsMCPOptions) error {
 		}
 		mcpServer.AddTool(tempo.ListInstancesTool.ToMCPTool(), tempo.ToMCPHandler(restConfig, dynamicClient, tempoToolset.ListInstancesHandler))
 		mcpServer.AddTool(tempo.GetTraceByIDTool.ToMCPTool(), tempo.ToMCPHandler(restConfig, dynamicClient, tempoToolset.GetTraceByIDHandler))
+		mcpServer.AddTool(CreateShowTraceTool(), tempo.ToMCPHandler(restConfig, dynamicClient, tempoToolset.ShowTraceHandler))
 		mcpServer.AddTool(tempo.SearchTracesTool.ToMCPTool(), tempo.ToMCPHandler(restConfig, dynamicClient, tempoToolset.SearchTracesHandler))
 		mcpServer.AddTool(tempo.SearchTagsTool.ToMCPTool(), tempo.ToMCPHandler(restConfig, dynamicClient, tempoToolset.SearchTagsHandler))
 		mcpServer.AddTool(tempo.SearchTagValuesTool.ToMCPTool(), tempo.ToMCPHandler(restConfig, dynamicClient, tempoToolset.SearchTagValuesHandler))
